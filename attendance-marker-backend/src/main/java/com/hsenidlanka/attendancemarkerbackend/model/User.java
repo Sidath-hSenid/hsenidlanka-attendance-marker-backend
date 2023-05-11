@@ -38,6 +38,7 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
+    @NotBlank
     private Company company;
 
     public User(String username, String email, String password) {
