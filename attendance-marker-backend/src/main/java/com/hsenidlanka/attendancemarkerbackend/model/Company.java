@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Data
 public class Company {
-    @Id @Generated private String Id;
+    @Id @Generated private String id;
     private String companyName;
     private String companyLocation;
 }

@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Data
 public class Attendance {
-    @Id @Generated private String Id;
+    @Id @Generated private String id;
     @NotBlank private String date;
     @NotBlank private String startTime;
     @NotBlank private String endTime;
