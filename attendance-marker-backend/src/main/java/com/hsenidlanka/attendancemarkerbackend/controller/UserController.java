@@ -60,4 +60,10 @@ public class UserController {
     public ResponseEntity<UserRequest> updateUser(@PathVariable("id")  String id, @RequestBody UserRequest userRequest){
         return new ResponseEntity(userService.updateUserById(id, userRequest), HttpStatus.OK);
     }
+
+    @GetMapping("/users-by-company/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponse>> allUsersByCompanyId(@PathVariable("id")  String id){
+        return new ResponseEntity(userService.getUsersByCompanyId(id), HttpStatus.OK);
+    }
 }

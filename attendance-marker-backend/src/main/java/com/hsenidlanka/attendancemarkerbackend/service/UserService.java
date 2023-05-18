@@ -14,4 +14,6 @@ public interface UserService {
     MessageResponse deleteUserById(String id);
 
     UserRequest updateUserById(String id, UserRequest userRequest);
+
+    List<UserResponse> getUsersByCompanyId(String id);
 }
