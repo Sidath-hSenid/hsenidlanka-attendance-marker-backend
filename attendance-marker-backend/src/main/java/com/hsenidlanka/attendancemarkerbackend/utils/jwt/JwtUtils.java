@@ -21,8 +21,11 @@ public class JwtUtils {
     @Value("${attendance.marker.backend.jwtExpirationMs}")
     private int jwtExpirationMs;
 
+    /**
+     * Generate JWT token
+     **/
     public String generateJwtToken(Authentication authentication) {
-
+        logger.info("JwtUtils - generateJwtToken()");
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         return Jwts.builder()
@@ -33,12 +36,20 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Get username from JWT token
+     **/
     public String getUserNameFromJwtToken(String token) {
+        logger.info("JwtUtils - getUserNameFromJwtToken()");
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
+    /**
+     * Validate JWT token
+     **/
     public boolean validateJwtToken(String authToken) {
         try {
+            logger.info("JwtUtils - validateJwtToken()");
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {

@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,9 +54,14 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    /**
+     * User login
+     **/
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+        logger.info("AuthController - authenticateUser()");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -73,19 +80,25 @@ public class AuthController {
                 roles));
     }
 
+    /**
+     * Register new user
+     **/
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
+        logger.info("AuthController - registerUser()");
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            logger.error("AuthController - registerUser(User name already taken.)");
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+                    .body(new MessageResponse("Error: Username is already taken!", 400));
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            logger.error("AuthController - registerUser(Email already taken.)");
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
+                    .body(new MessageResponse("Error: Email is already in use!",400));
         }
 
         // Create new user's account
@@ -98,6 +111,7 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
+            logger.error("AuthController - registerUser(User role is not found.)");
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
@@ -120,6 +134,6 @@ public class AuthController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!", 200));
     }
 }

@@ -14,15 +14,17 @@ public class Attendance {
     @Id @Generated private String id;
     @NotBlank private String date;
     @NotBlank private String startTime;
-    @NotBlank private String endTime;
-    @NotBlank private double workedHours;
+    private String endTime;
+    private double workedHours;
+    @NotBlank private Boolean halfDay;
     @DBRef @NotBlank private User user;
 
-    public Attendance(String date, String startTime, String endTime, double workedHours, User user){
+    public Attendance(String date, String startTime, String endTime, double workedHours,Boolean halfDay, User user){
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.workedHours = workedHours;
+        this.halfDay = halfDay;
         this.user = user;
     }
 }

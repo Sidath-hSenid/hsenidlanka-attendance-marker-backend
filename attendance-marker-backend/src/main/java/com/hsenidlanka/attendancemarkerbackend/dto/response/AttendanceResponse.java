@@ -14,5 +14,6 @@ public class AttendanceResponse {
     private String startTime;
     private String endTime;
     private double workedHours;
+    private Boolean halfDay;
     private User user;
 }
