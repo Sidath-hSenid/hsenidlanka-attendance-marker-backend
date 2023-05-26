@@ -1,6 +1,8 @@
 package com.hsenidlanka.attendancemarkerbackend.controller;
 
 import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateEndTimeRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateRequestById;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
 import com.hsenidlanka.attendancemarkerbackend.service.AttendanceService;
@@ -88,9 +90,9 @@ public class AttendanceController {
      **/
     @PutMapping("/attendances/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceRequest> updateAttendance(@PathVariable("id")  String id,@RequestBody AttendanceRequest attendanceRequest){
+    public ResponseEntity<AttendanceUpdateRequestById> updateAttendance(@PathVariable("id")  String id, @RequestBody AttendanceUpdateRequestById attendanceUpdateRequestById){
         logger.info("AttendanceController - updateAttendance()");
-        return new ResponseEntity(attendanceService.updateAttendanceById(id, attendanceRequest), HttpStatus.OK);
+        return new ResponseEntity(attendanceService.updateAttendanceById(id, attendanceUpdateRequestById), HttpStatus.OK);
     }
 
      /**
@@ -98,8 +100,8 @@ public class AttendanceController {
      **/
     @PutMapping("/attendances/update-end-time/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceRequest> updateAttendanceEndTime(@PathVariable("id")  String id,@RequestBody AttendanceRequest attendanceRequest){
+    public ResponseEntity<AttendanceUpdateEndTimeRequest> updateAttendanceEndTime(@PathVariable("id")  String id, @RequestBody AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest){
         logger.info("AttendanceController - updateAttendanceEndTime()");
-        return new ResponseEntity(attendanceService.updateAttendanceEndTimeById(id, attendanceRequest), HttpStatus.OK);
+        return new ResponseEntity(attendanceService.updateAttendanceEndTimeById(id, attendanceUpdateEndTimeRequest), HttpStatus.OK);
     }
 }

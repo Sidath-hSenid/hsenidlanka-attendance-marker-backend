@@ -1,6 +1,8 @@
 package com.hsenidlanka.attendancemarkerbackend.service;
 
 import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateEndTimeRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateRequestById;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
 import com.hsenidlanka.attendancemarkerbackend.model.Attendance;
@@ -106,8 +108,9 @@ public class AttendanceServiceImpl implements AttendanceService {
                 });
                 return attendanceObj;
             } else {
-                logger.error("AttendanceServiceImpl - getAttendanceByUserIdAndDate(No attendance available with the ID.)");
-                throw new HandleException("Exits without displaying data");
+                logger.error("AttendanceServiceImpl - getAttendanceByUserIdAndDate(No attendance available with the user ID and Date.)");
+                return (attendanceObj);
+//                throw new HandleException("Exits without displaying data");
             }
         } catch (Exception exception) {
             throw exception;
@@ -144,7 +147,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 return attendanceResponseList;
             } else {
                 logger.error("AttendanceServiceImpl - getAttendanceByUserId(No attendance available with theID.)");
-                throw new HandleException("Exits without displaying data");
+                return attendanceResponseList;
             }
         } catch (Exception exception) {
             throw exception;
@@ -154,23 +157,22 @@ public class AttendanceServiceImpl implements AttendanceService {
     /**
      * Update attendance by attendance ID
      **/
-    public AttendanceRequest updateAttendanceById(String id, AttendanceRequest attendanceRequest) {
+    public AttendanceUpdateRequestById updateAttendanceById(String id, AttendanceUpdateRequestById attendanceUpdateRequestById) {
         try {
             logger.info("AttendanceServiceImpl - updateAttendanceById()");
             Optional<Attendance> attendanceObj = attendanceRepository.findById(id);
             if (attendanceObj.isPresent()) {
                 logger.info("AttendanceServiceImpl - updateAttendanceById(An attendance available with the ID.)");
                 Attendance attendance = attendanceObj.get();
-                attendance.setDate(attendanceRequest.getDate());
-                attendance.setStartTime(attendanceRequest.getStartTime());
-                attendance.setEndTime(attendanceRequest.getEndTime());
-                attendance.setWorkedHours(attendanceRequest.getWorkedHours());
-                attendance.setUser(attendanceRequest.getUser());
+                attendance.setStartTime(attendanceUpdateRequestById.getStartTime());
+                attendance.setEndTime(attendanceUpdateRequestById.getEndTime());
+                attendance.setWorkedHours(attendanceUpdateRequestById.getWorkedHours());
+                attendance.setHalfDay(attendanceUpdateRequestById.getHalfDay());
                 attendanceRepository.save(modelMapper.map(attendance, Attendance.class));
-                return attendanceRequest;
+                return attendanceUpdateRequestById;
             } else {
                 logger.error("AttendanceServiceImpl - updateAttendanceById(No attendance available with the ID.)");
-                throw new HandleException("Exits without updating data");
+                return attendanceUpdateRequestById;
             }
         } catch (Exception exception) {
             throw exception;
@@ -180,21 +182,21 @@ public class AttendanceServiceImpl implements AttendanceService {
     /**
      * Update attendance end date by attendance ID
      **/
-    public AttendanceRequest updateAttendanceEndTimeById(String id, AttendanceRequest attendanceRequest) {
+    public AttendanceUpdateEndTimeRequest updateAttendanceEndTimeById(String id, AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest) {
         try {
             logger.info("AttendanceServiceImpl - updateAttendanceEndTimeById()");
             Optional<Attendance> attendanceObj = attendanceRepository.findById(id);
             if (attendanceObj.isPresent()) {
                 logger.info("AttendanceServiceImpl - updateAttendanceById(An attendance available with the ID)");
                 Attendance attendance = attendanceObj.get();
-                attendance.setEndTime(attendanceRequest.getEndTime());
-                attendance.setWorkedHours(attendanceRequest.getWorkedHours());
-                attendance.setHalfDay(attendanceRequest.getHalfDay());
+                attendance.setEndTime(attendanceUpdateEndTimeRequest.getEndTime());
+                attendance.setWorkedHours(attendanceUpdateEndTimeRequest.getWorkedHours());
+                attendance.setHalfDay(attendanceUpdateEndTimeRequest.getHalfDay());
                 attendanceRepository.save(modelMapper.map(attendance, Attendance.class));
-                return attendanceRequest;
+                return attendanceUpdateEndTimeRequest;
             } else {
                 logger.error("AttendanceServiceImpl - updateAttendanceById(No attendance available with the ID)");
-                throw new HandleException("Exits without updating data");
+                return attendanceUpdateEndTimeRequest;
             }
         } catch (Exception exception) {
             throw exception;

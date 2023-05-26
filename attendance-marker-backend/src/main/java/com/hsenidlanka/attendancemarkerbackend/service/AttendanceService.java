@@ -1,6 +1,8 @@
 package com.hsenidlanka.attendancemarkerbackend.service;
 
 import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateEndTimeRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateRequestById;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
 
@@ -19,7 +21,7 @@ public interface AttendanceService {
 
     MessageResponse deleteAttendanceById(String id);
 
-    AttendanceRequest updateAttendanceById(String id, AttendanceRequest attendanceRequest);
+    AttendanceUpdateRequestById updateAttendanceById(String id, AttendanceUpdateRequestById attendanceUpdateRequestById);
 
-    AttendanceRequest updateAttendanceEndTimeById(String id, AttendanceRequest attendanceRequest);
+    AttendanceUpdateEndTimeRequest updateAttendanceEndTimeById(String id, AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest);
 }
