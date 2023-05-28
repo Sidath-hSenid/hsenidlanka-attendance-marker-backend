@@ -1,18 +1,13 @@
 package com.hsenidlanka.attendancemarkerbackend.controller;
 
-import com.hsenidlanka.attendancemarkerbackend.dto.request.CompanyRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.CompanyResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.*;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.*;
 import com.hsenidlanka.attendancemarkerbackend.service.CompanyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -29,9 +24,9 @@ public class CompanyController {
      **/
     @PostMapping("/companies")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CompanyRequest> addCompany(@RequestBody CompanyRequest companyRequest) {
+    public PostCompanyRequest addCompany(@RequestBody CompanyRequest companyRequest) {
         logger.info("CompanyController - addCompany()");
-        return new ResponseEntity(companyService.addCompany(companyRequest), HttpStatus.CREATED);
+        return companyService.addCompany(companyRequest);
     }
 
     /**
@@ -39,9 +34,9 @@ public class CompanyController {
      **/
     @GetMapping("/companies")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CompanyResponse>> allCompanies() {
+    public GetCompanyResponseList allCompanies() {
         logger.info("CompanyController - allCompanies()");
-        return new ResponseEntity(companyService.getAllCompanies(), HttpStatus.OK);
+        return companyService.getAllCompanies();
     }
 
     /**
@@ -49,9 +44,9 @@ public class CompanyController {
      **/
     @GetMapping("/companies/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CompanyResponse> companyById(@PathVariable("id") String id) {
+    public GetCompanyResponse companyById(@PathVariable("id") String id) {
         logger.info("CompanyController - companyById()");
-        return new ResponseEntity(companyService.getCompanyById(id), HttpStatus.OK);
+        return companyService.getCompanyById(id);
     }
 
     /**
@@ -59,9 +54,9 @@ public class CompanyController {
      **/
     @DeleteMapping("/companies/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MessageResponse> deleteCompany(@PathVariable("id") String id) {
+    public MessageResponse deleteCompany(@PathVariable("id") String id) {
         logger.info("CompanyController - deleteCompany()");
-        return new ResponseEntity(companyService.deleteCompanyById(id), HttpStatus.OK);
+        return companyService.deleteCompanyById(id);
     }
 
     /**
@@ -69,8 +64,8 @@ public class CompanyController {
      **/
     @PutMapping("/companies/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CompanyRequest> updateCompany(@PathVariable("id") String id, @RequestBody CompanyRequest companyRequest) {
+    public PutCompanyRequest updateCompany(@PathVariable("id") String id, @RequestBody CompanyRequest companyRequest) {
         logger.info("CompanyController - updateCompany()");
-        return new ResponseEntity(companyService.updateCompanyById(id, companyRequest), HttpStatus.OK);
+        return companyService.updateCompanyById(id, companyRequest);
     }
 }

@@ -1,13 +1,9 @@
 package com.hsenidlanka.attendancemarkerbackend.service;
 
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateEndTimeRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateRequestById;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.*;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.*;
 import com.hsenidlanka.attendancemarkerbackend.model.Attendance;
 import com.hsenidlanka.attendancemarkerbackend.repository.AttendanceRepository;
-import com.hsenidlanka.attendancemarkerbackend.utils.exception.HandleException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
@@ -34,66 +30,67 @@ public class AttendanceServiceImpl implements AttendanceService {
      * Add new attendance
      **/
     @Override
-    public AttendanceRequest addAttendance(AttendanceRequest attendanceRequest) {
+    public PostAttendanceRequest addAttendance(AttendanceRequest attendanceRequest) {
         logger.info("AttendanceServiceImpl - addAttendance()");
         try {
             attendanceRepository.save(modelMapper.map(attendanceRequest, Attendance.class));
             logger.info("AttendanceServiceImpl - addAttendance(Saving successful)");
-            return attendanceRequest;
+            return new PostAttendanceRequest(attendanceRequest, 201);
         } catch (Exception exception) {
-            throw exception;
+            logger.error("AttendanceServiceImpl - addAttendance()" + exception);
+            return new PostAttendanceRequest(null, 400);
         }
     }
 
     /**
      * Retrieve all attendances
      **/
-    public List<AttendanceResponse> getAllAttendances() {
+    public GetAttendanceResponseList getAllAttendances() {
         try {
             logger.info("AttendanceServiceImpl - getAllAttendances()");
             List<Attendance> attendanceList = attendanceRepository.findAll();
             if (attendanceList.isEmpty()) {
                 logger.error("AttendanceServiceImpl - getAllAttendances(No attendances available.)");
-                throw new HandleException("Exits without displaying data.");
+                return new GetAttendanceResponseList(null, 404);
             } else {
                 logger.info("AttendanceServiceImpl - getAllAttendances(Attendances are available)");
-                return modelMapper.map(attendanceList, new TypeToken<List<AttendanceResponse>>() {
-                }.getType());
+                return new GetAttendanceResponseList(modelMapper.map(attendanceList, new TypeToken<List<AttendanceResponse>>() {
+                }.getType()), 200);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new GetAttendanceResponseList(null, 400);
         }
     }
 
     /**
      * Retrieve attendance by attendance ID
      **/
-    public AttendanceResponse getAttendanceById(String id) {
+    public GetAttendanceResponse getAttendanceById(String id) {
         try {
             logger.info("AttendanceServiceImpl - getAttendanceById()");
             Optional<Attendance> attendanceObj = attendanceRepository.findById(id);
             if (attendanceObj.isPresent()) {
                 logger.info("AttendanceServiceImpl - getAttendanceById(Attendance available.)");
                 Attendance attendance = attendanceObj.get();
-                return modelMapper.map(attendance, AttendanceResponse.class);
+                return new GetAttendanceResponse(modelMapper.map(attendance, AttendanceResponse.class),200);
             } else {
                 logger.error("AttendanceServiceImpl - getAttendanceById(No attendance available.)");
-                throw new HandleException("Exits without displaying data");
+                return new GetAttendanceResponse(null,404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new GetAttendanceResponse(null,404);
         }
     }
 
     /**
      * Retrieve attendance by user ID and Date
      **/
-    public AttendanceResponse getAttendanceByUserIdAndDate(String id, String date) {
+    public GetAttendanceResponse getAttendanceByUserIdAndDate(String id, String date) {
         try {
             logger.info("AttendanceServiceImpl - getAttendanceByUserIdAndDate()");
             List<Attendance> attendanceObjList = attendanceRepository.findAll();
             final AttendanceResponse attendanceObj = new AttendanceResponse();
-            if (!attendanceObjList.isEmpty()) {
+            if(!attendanceObjList.isEmpty()) {
                 logger.info("AttendanceServiceImpl - getAttendanceByUserIdAndDate(attendanceObjList is not empty.)");
                 attendanceObjList.forEach(attendance -> {
                     if (attendance.getDate().equals(date) && attendance.getUser().getId().equals(id)) {
@@ -106,21 +103,20 @@ public class AttendanceServiceImpl implements AttendanceService {
                         attendanceObj.setHalfDay(attendance.getHalfDay());
                     }
                 });
-                return attendanceObj;
+                return new GetAttendanceResponse(attendanceObj, 200);
             } else {
                 logger.error("AttendanceServiceImpl - getAttendanceByUserIdAndDate(No attendance available with the user ID and Date.)");
-                return (attendanceObj);
-//                throw new HandleException("Exits without displaying data");
+                return new GetAttendanceResponse(null, 404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new GetAttendanceResponse(null, 400);
         }
     }
 
     /**
      * Retrieve attendance by user ID
      **/
-    public List<AttendanceResponse> getAttendanceByUserId(String id) {
+    public GetAttendanceResponseList getAttendanceByUserId(String id) {
         try {
             logger.info("AttendanceServiceImpl - getAttendanceByUserId()");
             List<Attendance> attendanceObjList = attendanceRepository.findAll();
@@ -144,20 +140,20 @@ public class AttendanceServiceImpl implements AttendanceService {
                         return false;
                     }
                 }).collect(Collectors.toList());
-                return attendanceResponseList;
+                return new GetAttendanceResponseList(attendanceResponseList,200);
             } else {
                 logger.error("AttendanceServiceImpl - getAttendanceByUserId(No attendance available with theID.)");
-                return attendanceResponseList;
+                return new GetAttendanceResponseList(null,404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new GetAttendanceResponseList(null,400);
         }
     }
 
     /**
      * Update attendance by attendance ID
      **/
-    public AttendanceUpdateRequestById updateAttendanceById(String id, AttendanceUpdateRequestById attendanceUpdateRequestById) {
+    public PutAttendanceUpdateRequestById updateAttendanceById(String id, AttendanceUpdateRequestById attendanceUpdateRequestById) {
         try {
             logger.info("AttendanceServiceImpl - updateAttendanceById()");
             Optional<Attendance> attendanceObj = attendanceRepository.findById(id);
@@ -169,20 +165,20 @@ public class AttendanceServiceImpl implements AttendanceService {
                 attendance.setWorkedHours(attendanceUpdateRequestById.getWorkedHours());
                 attendance.setHalfDay(attendanceUpdateRequestById.getHalfDay());
                 attendanceRepository.save(modelMapper.map(attendance, Attendance.class));
-                return attendanceUpdateRequestById;
+                return new PutAttendanceUpdateRequestById(attendanceUpdateRequestById, 200);
             } else {
                 logger.error("AttendanceServiceImpl - updateAttendanceById(No attendance available with the ID.)");
-                return attendanceUpdateRequestById;
+                return new PutAttendanceUpdateRequestById(null, 404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new PutAttendanceUpdateRequestById(null, 400);
         }
     }
 
     /**
      * Update attendance end date by attendance ID
      **/
-    public AttendanceUpdateEndTimeRequest updateAttendanceEndTimeById(String id, AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest) {
+    public PutAttendanceUpdateEndTimeRequest updateAttendanceEndTimeById(String id, AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest) {
         try {
             logger.info("AttendanceServiceImpl - updateAttendanceEndTimeById()");
             Optional<Attendance> attendanceObj = attendanceRepository.findById(id);
@@ -193,13 +189,13 @@ public class AttendanceServiceImpl implements AttendanceService {
                 attendance.setWorkedHours(attendanceUpdateEndTimeRequest.getWorkedHours());
                 attendance.setHalfDay(attendanceUpdateEndTimeRequest.getHalfDay());
                 attendanceRepository.save(modelMapper.map(attendance, Attendance.class));
-                return attendanceUpdateEndTimeRequest;
+                return new PutAttendanceUpdateEndTimeRequest(attendanceUpdateEndTimeRequest,200);
             } else {
                 logger.error("AttendanceServiceImpl - updateAttendanceById(No attendance available with the ID)");
-                return attendanceUpdateEndTimeRequest;
+                return new PutAttendanceUpdateEndTimeRequest(null,404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new PutAttendanceUpdateEndTimeRequest(null,400);
         }
     }
 
@@ -216,10 +212,10 @@ public class AttendanceServiceImpl implements AttendanceService {
                 return new MessageResponse("Attendance deleted successfully!", 200);
             } else {
                 logger.error("AttendanceServiceImpl - deleteAttendanceById(No attendance available with this ID)");
-                throw new HandleException("Exits without deleting data");
+                return new MessageResponse(null, 404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new MessageResponse(null, 400);
         }
     }
 }

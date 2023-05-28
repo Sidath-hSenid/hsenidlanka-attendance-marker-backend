@@ -1,20 +1,13 @@
 package com.hsenidlanka.attendancemarkerbackend.controller;
 
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateEndTimeRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateRequestById;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.*;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.*;
 import com.hsenidlanka.attendancemarkerbackend.service.AttendanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -30,9 +23,9 @@ public class AttendanceController {
     **/
     @PostMapping("/attendances")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<AttendanceRequest> addAttendance(@RequestBody AttendanceRequest attendanceRequest){
+    public PostAttendanceRequest addAttendance(@RequestBody AttendanceRequest attendanceRequest){
         logger.info("AttendanceController - addAttendance()");
-        return new ResponseEntity(attendanceService.addAttendance(attendanceRequest), HttpStatus.CREATED);
+        return attendanceService.addAttendance(attendanceRequest);
     }
 
      /**
@@ -40,9 +33,9 @@ public class AttendanceController {
      **/
     @GetMapping("/attendances")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<List<AttendanceResponse>> allAttendances(){
+    public GetAttendanceResponseList allAttendances(){
         logger.info("AttendanceController - allAttendances()");
-        return new ResponseEntity(attendanceService.getAllAttendances(), HttpStatus.OK);
+        return attendanceService.getAllAttendances();
     }
 
      /**
@@ -50,9 +43,9 @@ public class AttendanceController {
      **/
     @GetMapping("/attendances/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceResponse> attendanceById(@PathVariable("id")  String id){
+    public GetAttendanceResponse attendanceById(@PathVariable("id")  String id){
         logger.info("AttendanceController - attendanceById()");
-        return new ResponseEntity(attendanceService.getAttendanceById(id), HttpStatus.OK);
+        return attendanceService.getAttendanceById(id);
     }
 
      /**
@@ -60,9 +53,9 @@ public class AttendanceController {
      **/
     @GetMapping("/attendances/user-id-date/{id}/{date}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceResponse> attendanceByUserIdAndDate(@PathVariable("id")  String id, @PathVariable("date")  String date){
+    public GetAttendanceResponse attendanceByUserIdAndDate(@PathVariable("id")  String id, @PathVariable("date")  String date){
         logger.info("AttendanceController - attendanceByUserIdAndDate()");
-        return new ResponseEntity(attendanceService.getAttendanceByUserIdAndDate(id,date), HttpStatus.OK);
+        return attendanceService.getAttendanceByUserIdAndDate(id,date);
     }
 
      /**
@@ -70,9 +63,9 @@ public class AttendanceController {
      **/
     @GetMapping("/attendances/user-id/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceResponse> getAttendanceByUserId(@PathVariable("id")  String id){
+    public GetAttendanceResponseList getAttendanceByUserId(@PathVariable("id")  String id){
         logger.info("AttendanceController - getAttendanceByUserId()");
-        return new ResponseEntity(attendanceService.getAttendanceByUserId(id), HttpStatus.OK);
+        return attendanceService.getAttendanceByUserId(id);
     }
 
      /**
@@ -80,9 +73,9 @@ public class AttendanceController {
      **/
     @DeleteMapping("/attendances/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<MessageResponse> deleteAttendance(@PathVariable("id")  String id){
+    public MessageResponse deleteAttendance(@PathVariable("id")  String id){
         logger.info("AttendanceController - deleteAttendance()");
-        return new ResponseEntity(attendanceService.deleteAttendanceById(id), HttpStatus.OK);
+        return attendanceService.deleteAttendanceById(id);
     }
 
      /**
@@ -90,9 +83,9 @@ public class AttendanceController {
      **/
     @PutMapping("/attendances/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceUpdateRequestById> updateAttendance(@PathVariable("id")  String id, @RequestBody AttendanceUpdateRequestById attendanceUpdateRequestById){
+    public PutAttendanceUpdateRequestById updateAttendance(@PathVariable("id")  String id, @RequestBody AttendanceUpdateRequestById attendanceUpdateRequestById){
         logger.info("AttendanceController - updateAttendance()");
-        return new ResponseEntity(attendanceService.updateAttendanceById(id, attendanceUpdateRequestById), HttpStatus.OK);
+        return attendanceService.updateAttendanceById(id, attendanceUpdateRequestById);
     }
 
      /**
@@ -100,8 +93,8 @@ public class AttendanceController {
      **/
     @PutMapping("/attendances/update-end-time/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<AttendanceUpdateEndTimeRequest> updateAttendanceEndTime(@PathVariable("id")  String id, @RequestBody AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest){
+    public PutAttendanceUpdateEndTimeRequest updateAttendanceEndTime(@PathVariable("id")  String id, @RequestBody AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest){
         logger.info("AttendanceController - updateAttendanceEndTime()");
-        return new ResponseEntity(attendanceService.updateAttendanceEndTimeById(id, attendanceUpdateEndTimeRequest), HttpStatus.OK);
+        return attendanceService.updateAttendanceEndTimeById(id, attendanceUpdateEndTimeRequest);
     }
 }

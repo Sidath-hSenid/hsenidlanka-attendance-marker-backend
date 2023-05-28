@@ -1,27 +1,26 @@
 package com.hsenidlanka.attendancemarkerbackend.service;
 
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateEndTimeRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.request.AttendanceUpdateRequestById;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.*;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.GetAttendanceResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.GetAttendanceResponseList;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
 
 import java.util.List;
 
 public interface AttendanceService {
-    AttendanceRequest addAttendance(AttendanceRequest attendanceRequest);
+    PostAttendanceRequest addAttendance(AttendanceRequest attendanceRequest);
 
-    List<AttendanceResponse> getAllAttendances();
+    GetAttendanceResponseList getAllAttendances();
 
-    AttendanceResponse getAttendanceById(String id);
+    GetAttendanceResponse getAttendanceById(String id);
 
-    AttendanceResponse getAttendanceByUserIdAndDate(String id, String date);
+    GetAttendanceResponse getAttendanceByUserIdAndDate(String id, String date);
 
-    List<AttendanceResponse> getAttendanceByUserId(String id);
+    GetAttendanceResponseList getAttendanceByUserId(String id);
 
     MessageResponse deleteAttendanceById(String id);
 
-    AttendanceUpdateRequestById updateAttendanceById(String id, AttendanceUpdateRequestById attendanceUpdateRequestById);
+    PutAttendanceUpdateRequestById updateAttendanceById(String id, AttendanceUpdateRequestById attendanceUpdateRequestById);
 
-    AttendanceUpdateEndTimeRequest updateAttendanceEndTimeById(String id, AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest);
+    PutAttendanceUpdateEndTimeRequest updateAttendanceEndTimeById(String id, AttendanceUpdateEndTimeRequest attendanceUpdateEndTimeRequest);
 }

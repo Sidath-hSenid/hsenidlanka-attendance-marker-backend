@@ -1,13 +1,15 @@
 package com.hsenidlanka.attendancemarkerbackend.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
-public class MessageResponse {
-    private String message;
+public class GetUserResponseList {
+    private List<UserResponse> userResponseList;
     private int statusCode;
 }

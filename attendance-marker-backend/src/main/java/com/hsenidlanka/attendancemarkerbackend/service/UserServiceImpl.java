@@ -1,21 +1,17 @@
 package com.hsenidlanka.attendancemarkerbackend.service;
 
-import com.hsenidlanka.attendancemarkerbackend.dto.request.UserRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.AttendanceResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.UserResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.*;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.*;
 import com.hsenidlanka.attendancemarkerbackend.model.Attendance;
-import com.hsenidlanka.attendancemarkerbackend.model.ERole;
-import com.hsenidlanka.attendancemarkerbackend.model.Role;
 import com.hsenidlanka.attendancemarkerbackend.model.User;
 import com.hsenidlanka.attendancemarkerbackend.repository.AttendanceRepository;
 import com.hsenidlanka.attendancemarkerbackend.repository.UserRepository;
 import com.hsenidlanka.attendancemarkerbackend.utils.exception.HandleException;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,12 +29,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     /**
      * Retrieve all users
      **/
-    public List<UserResponse> getAllUsers() {
+    public GetUserResponseList getAllUsers() {
         try {
             logger.info("UserServiceImpl - getAllUsers()");
             List<UserResponse> userResponseList = new ArrayList<>();
@@ -46,7 +45,7 @@ public class UserServiceImpl implements UserService {
             logger.info(userList.toString());
             if (userList.isEmpty()) {
                 logger.error("UserServiceImpl - getAllUsers(No users available)");
-                throw new HandleException("Exits without displaying data");
+                return new GetUserResponseList(userResponseList, 404);
             } else {
                 userList.forEach(user -> {
                             user.getRoles().stream().filter(role -> {
@@ -65,37 +64,37 @@ public class UserServiceImpl implements UserService {
                             }).collect(Collectors.toList());
                         }
                 );
-                return userResponseList;
+                return new GetUserResponseList(userResponseList, 200);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new GetUserResponseList(null, 400);
         }
     }
 
     /**
      * Retrieve user by user ID
      **/
-    public UserResponse getUserById(String id) {
+    public GetUserResponse getUserById(String id) {
         try {
             logger.info("UserServiceImpl - getUserById()");
             Optional<User> userObj = userRepository.findById(id);
             if (userObj.isPresent()) {
                 logger.info("UserServiceImpl - getUserById(A user available with this ID)");
                 User user = userObj.get();
-                return modelMapper.map(user, UserResponse.class);
+                return new GetUserResponse(modelMapper.map(user, UserResponse.class), 200);
             } else {
                 logger.error("UserServiceImpl - getUserById(No user available with this ID)");
-                throw new HandleException("Exits without displaying data");
+                return new GetUserResponse(null, 404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new GetUserResponse(null, 400);
         }
     }
 
     /**
      * Update user by user ID
      **/
-    public UserRequest updateUserById(String id, UserRequest userRequest) {
+    public PutUserRequest updateUserById(String id, UserRequest userRequest) {
         try {
             logger.info("UserServiceImpl - updateUserById()");
             Optional<User> userObj = userRepository.findById(id);
@@ -106,13 +105,13 @@ public class UserServiceImpl implements UserService {
                 user.setEmail(userRequest.getEmail());
                 user.setCompany(userRequest.getCompany());
                 userRepository.save(modelMapper.map(user, User.class));
-                return userRequest;
+                return new PutUserRequest(userRequest, 200);
             } else {
                 logger.error("UserServiceImpl - updateUserById(No user available with this ID)");
-                throw new HandleException("Exits without updating data");
+                return new PutUserRequest(null, 404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new PutUserRequest(null, 400);
         }
     }
 
@@ -154,17 +153,17 @@ public class UserServiceImpl implements UserService {
                 }
             } else {
                 logger.error("UserServiceImpl - deleteUserById(No company available with this ID)");
-                throw new HandleException("Exits without displaying data");
+                return new MessageResponse("No company available with this ID!", 404);
             }
         } catch (Exception exception) {
-            throw exception;
+            return new MessageResponse("Something went wrong!", 400);
         }
     }
 
     /**
      * Retrieve user by company ID
      **/
-    public List<UserResponse> getUsersByCompanyId(String id) {
+    public GetUserResponseList getUsersByCompanyId(String id) {
         try {
             logger.info("UserServiceImpl - getUsersByCompanyId()");
             List<UserResponse> userResponseList = new ArrayList<>();
@@ -210,15 +209,40 @@ public class UserServiceImpl implements UserService {
                             return false;
                         }
                     }).collect(Collectors.toList());
-                    return userCompanyResponseList;
+                    return new GetUserResponseList(userCompanyResponseList, 200);
                 } else {
                     logger.error("UserServiceImpl - getUsersByCompanyId(No company available with this ID)");
-                    throw new HandleException("Exits without displaying data");
+                    return new GetUserResponseList(null, 404);
                 }
             }
 
         } catch (Exception exception) {
-            throw exception;
+            return new GetUserResponseList(null, 400);
+        }
+    }
+
+    public MessageResponse resetPassword(String username, String email, ResetPasswordRequest resetPasswordRequest){
+        try {
+            logger.info("UserServiceImpl - resetPassword()");
+            List<User> userObjList = userRepository.findAll();
+            if (!userObjList.isEmpty()) {
+                logger.info("UserServiceImpl - resetPassword(userObjList is not empty.)");
+                userObjList.forEach(user -> {
+                    if (user.getUsername().equals(username) && user.getEmail().equals(email)) {
+                        logger.info("UserServiceImpl - resetPassword(An user available with username and email)");
+                        User resetPassword = user;
+                        resetPassword.setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
+                        userRepository.save(modelMapper.map(resetPassword, User.class));
+                        logger.info("UserServiceImpl - resetPassword(userObjList is not empty)");
+                    }
+                });
+                return new MessageResponse("Password reset successfully!", 200);
+            } else {
+                logger.error("UserServiceImpl - resetPassword(Unable find a user with given username and email)");
+                return new MessageResponse("Unable find a user with given username and email!", 404);
+            }
+        } catch (Exception exception) {
+            return new MessageResponse(null, 400);
         }
     }
 

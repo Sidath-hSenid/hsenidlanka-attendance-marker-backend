@@ -1,18 +1,13 @@
 package com.hsenidlanka.attendancemarkerbackend.controller;
 
-import com.hsenidlanka.attendancemarkerbackend.dto.request.UserRequest;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.UserResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.*;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.*;
 import com.hsenidlanka.attendancemarkerbackend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -29,9 +24,9 @@ public class UserController {
      **/
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> allUsers() {
+    public GetUserResponseList allUsers() {
         logger.info("UserController - allUsers()");
-        return new ResponseEntity(userService.getAllUsers(), HttpStatus.OK);
+        return userService.getAllUsers();
     }
 
     /**
@@ -39,9 +34,9 @@ public class UserController {
      **/
     @GetMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<UserResponse> userById(@PathVariable("id") String id) {
+    public GetUserResponse userById(@PathVariable("id") String id) {
         logger.info("UserController - userById()");
-        return new ResponseEntity(userService.getUserById(id), HttpStatus.OK);
+        return userService.getUserById(id);
     }
 
     /**
@@ -49,9 +44,9 @@ public class UserController {
      **/
     @GetMapping("/users/company-id/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> usersByCompanyId(@PathVariable("id") String id) {
+    public GetUserResponseList usersByCompanyId(@PathVariable("id") String id) {
         logger.info("UserController - usersByCompanyId()");
-        return new ResponseEntity(userService.getUsersByCompanyId(id), HttpStatus.OK);
+        return userService.getUsersByCompanyId(id);
     }
 
     /**
@@ -59,9 +54,9 @@ public class UserController {
      **/
     @DeleteMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MessageResponse> deleteUser(@PathVariable("id") String id) {
+    public MessageResponse deleteUser(@PathVariable("id") String id) {
         logger.info("UserController - deleteUser()");
-        return new ResponseEntity(userService.deleteUserById(id), HttpStatus.OK);
+        return userService.deleteUserById(id);
     }
 
     /**
@@ -69,8 +64,18 @@ public class UserController {
      **/
     @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserRequest> updateUser(@PathVariable("id") String id, @RequestBody UserRequest userRequest) {
+    public PutUserRequest updateUser(@PathVariable("id") String id, @RequestBody UserRequest userRequest) {
         logger.info("UserController - updateUser()");
-        return new ResponseEntity(userService.updateUserById(id, userRequest), HttpStatus.OK);
+        return userService.updateUserById(id, userRequest);
     }
+
+    /**
+     * Reset password by username and email
+     **/
+    @PutMapping("/users/reset-password/{username}/{email}")
+    public MessageResponse resetPassword(@PathVariable("username") String username, @PathVariable("email") String email, @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        logger.info("UserController - resetPassword()");
+        return userService.resetPassword(username, email, resetPasswordRequest);
+    }
+
 }

@@ -1,19 +1,25 @@
 package com.hsenidlanka.attendancemarkerbackend.service;
 
+import com.hsenidlanka.attendancemarkerbackend.dto.request.PutUserRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.request.ResetPasswordRequest;
 import com.hsenidlanka.attendancemarkerbackend.dto.request.UserRequest;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.GetUserResponse;
+import com.hsenidlanka.attendancemarkerbackend.dto.response.GetUserResponseList;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
-import com.hsenidlanka.attendancemarkerbackend.dto.response.UserResponse;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserResponse> getAllUsers();
+    GetUserResponseList getAllUsers();
 
-    UserResponse getUserById(String id);
+    GetUserResponse getUserById(String id);
 
     MessageResponse deleteUserById(String id);
 
-    UserRequest updateUserById(String id, UserRequest userRequest);
+    PutUserRequest updateUserById(String id, UserRequest userRequest);
 
-    List<UserResponse> getUsersByCompanyId(String id);
+    GetUserResponseList getUsersByCompanyId(String id);
+
+    MessageResponse resetPassword(String username, String email, ResetPasswordRequest resetPasswordRequest);
+
 }
