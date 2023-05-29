@@ -131,7 +131,14 @@ public class CompanyServiceImpl implements CompanyService {
             logger.info(userList.toString());
             if (userList.isEmpty()) {
                 logger.error("CompanyServiceImpl - deleteCompanyById(No users available)");
-                throw new HandleException("Exits without displaying data");
+                if (companyObj.isPresent()) {
+                    logger.info("CompanyServiceImpl - deleteCompanyById(companyObj presents.)");
+                    companyRepository.deleteById(id);
+                    return new MessageResponse("Company Deleted Successfully!", 200);
+                } else {
+                    logger.error("CompanyServiceImpl - deleteCompanyById(companyObj not presents.)");
+                    return new MessageResponse("Unable to delete company!", 404);
+                }
             } else {
                 userList.forEach(user -> {
                             user.getRoles().stream().filter(role -> {

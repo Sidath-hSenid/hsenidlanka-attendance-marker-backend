@@ -152,8 +152,14 @@ public class UserServiceImpl implements UserService {
                     return new MessageResponse("Unable to delete user since it has recorded attendances!", 400);
                 }
             } else {
-                logger.error("UserServiceImpl - deleteUserById(No company available with this ID)");
-                return new MessageResponse("No company available with this ID!", 404);
+                if (userObj.isPresent()) {
+                    userRepository.deleteById(id);
+                    logger.info("UserServiceImpl - deleteUserById(User deleted successfully)");
+                    return new MessageResponse("User Deleted Successfully!", 200);
+                } else {
+                    logger.error("UserServiceImpl - deleteUserById(Unable to delete user)");
+                    return new MessageResponse("Unable to delete user!", 400);
+                }
             }
         } catch (Exception exception) {
             return new MessageResponse("Something went wrong!", 400);
@@ -211,7 +217,7 @@ public class UserServiceImpl implements UserService {
                     }).collect(Collectors.toList());
                     return new GetUserResponseList(userCompanyResponseList, 200);
                 } else {
-                    logger.error("UserServiceImpl - getUsersByCompanyId(No company available with this ID)");
+                    logger.error("UserServiceImpl - getUsersByCompanyId(No user available with this ID)");
                     return new GetUserResponseList(null, 404);
                 }
             }

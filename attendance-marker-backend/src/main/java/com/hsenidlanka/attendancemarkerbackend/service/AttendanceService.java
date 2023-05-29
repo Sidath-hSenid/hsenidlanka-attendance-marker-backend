@@ -5,8 +5,6 @@ import com.hsenidlanka.attendancemarkerbackend.dto.response.GetAttendanceRespons
 import com.hsenidlanka.attendancemarkerbackend.dto.response.GetAttendanceResponseList;
 import com.hsenidlanka.attendancemarkerbackend.dto.response.MessageResponse;
 
-import java.util.List;
-
 public interface AttendanceService {
     PostAttendanceRequest addAttendance(AttendanceRequest attendanceRequest);
 
