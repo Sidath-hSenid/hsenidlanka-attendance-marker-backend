@@ -90,6 +90,57 @@ public class AuthController {
     }
 
     /**
+     * Register new admin
+     **/
+    @PostMapping("/add")
+    public MessageResponse addUser(@Valid @RequestBody RegisterRequest signUpRequest) {
+        logger.info("AuthController - registerUser()");
+        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            logger.error("AuthController - registerUser(User name already taken.)");
+            return new MessageResponse("Error: Username is already taken!", 403);
+        }
+
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            logger.error("AuthController - registerUser(Email already taken.)");
+            return new MessageResponse("Error: Email is already in use!",403);
+        }
+
+        User user = new User(signUpRequest.getUsername(),
+                signUpRequest.getEmail(),
+                encoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getCompany());
+
+        Set<String> strRoles = signUpRequest.getRoles();
+        Set<Role> roles = new HashSet<>();
+
+        if (strRoles == null) {
+            logger.error("AuthController - registerUser(User role is not found.)");
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(adminRole);
+                        break;
+                    default:
+                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(userRole);
+                }
+            });
+        }
+
+        user.setRoles(roles);
+        userRepository.save(user);
+
+        return new MessageResponse("User registered successfully!", 200);
+    }
+
+    /**
      * Register new user
      **/
     @PostMapping("/register")
