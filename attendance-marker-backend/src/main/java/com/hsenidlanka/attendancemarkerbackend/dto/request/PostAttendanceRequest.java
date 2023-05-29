@@ -9,5 +9,5 @@ import lombok.Data;
 @Data
 public class PostAttendanceRequest {
     private AttendanceRequest attendanceRequest;
-    private int statCode;
+    private int statusCode;
 }

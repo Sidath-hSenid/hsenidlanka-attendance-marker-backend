@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.hsenidlanka.attendancemarkerbackend.dto.response.LoginResponse;
 import com.hsenidlanka.attendancemarkerbackend.service.RefreshTokenService;
 import com.hsenidlanka.attendancemarkerbackend.utils.exception.TokenRefreshException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,7 +69,7 @@ public class AuthController {
      * User login
      **/
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         logger.info("AuthController - authenticateUser()");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -81,11 +82,11 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
+        return new LoginResponse((new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles)), 200);
     }
 
     /**
@@ -93,23 +94,18 @@ public class AuthController {
      **/
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
+    public MessageResponse registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
         logger.info("AuthController - registerUser()");
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             logger.error("AuthController - registerUser(User name already taken.)");
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!", 400));
+            return new MessageResponse("Error: Username is already taken!", 403);
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             logger.error("AuthController - registerUser(Email already taken.)");
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!",400));
+            return new MessageResponse("Error: Email is already in use!",403);
         }
 
-        // Create new user's account
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
@@ -142,9 +138,12 @@ public class AuthController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!", 200));
+        return new MessageResponse("User registered successfully!", 200);
     }
 
+    /**
+     * User log out
+     **/
     @PostMapping("/log-out")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<?> logoutUser() {
