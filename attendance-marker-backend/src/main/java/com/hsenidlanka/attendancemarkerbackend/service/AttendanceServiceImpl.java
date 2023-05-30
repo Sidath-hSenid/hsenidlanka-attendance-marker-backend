@@ -9,9 +9,11 @@ import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,7 +121,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     public GetAttendanceResponseList getAttendanceByUserId(String id) {
         try {
             logger.info("AttendanceServiceImpl - getAttendanceByUserId()");
-            List<Attendance> attendanceObjList = attendanceRepository.findAll();
+            Attendance attendanceObj = new Attendance();
+            List<Attendance> attendanceObjList = attendanceRepository.findByOrderByDateDesc();
             List<AttendanceResponse> attendanceResponseList = new ArrayList<>();
             if (!attendanceObjList.isEmpty()) {
                 logger.info("AttendanceServiceImpl - getAttendanceByUserId(AttendanceObjList not empty.)");
