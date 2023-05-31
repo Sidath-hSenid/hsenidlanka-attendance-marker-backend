@@ -79,7 +79,7 @@ public class TestController {
         testAttendance.setStartTime("08:25");
         testAttendance.setEndTime("17:45");
         testAttendance.setWorkedHours(9);
-        testAttendance.setHalfDay(false);
+        testAttendance.setAttendanceStatus(AttendanceStatus.IN_PROGRESS);
         testAttendance.setUser(new User("1","user1","user1@gmail.com","12341234",roles,new Company("1","company1","location1")));
         return testAttendance;
     }
@@ -97,7 +97,7 @@ public class TestController {
         testAttendance.setStartTime("08:35");
         testAttendance.setEndTime("10:45");
         testAttendance.setWorkedHours(2);
-        testAttendance.setHalfDay(true);
+        testAttendance.setAttendanceStatus(AttendanceStatus.IN_PROGRESS);
         testAttendance.setUser(new User("2","user2","user2@gmail.com","12341234", roles,new Company("1","company1","location1")));
         return testAttendance;
     }

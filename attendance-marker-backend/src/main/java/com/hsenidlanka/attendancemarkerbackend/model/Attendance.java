@@ -16,15 +16,15 @@ public class Attendance {
     @NotBlank private String startTime;
     private String endTime;
     private double workedHours;
-    @NotBlank private Boolean halfDay;
+    @NotBlank private AttendanceStatus attendanceStatus;
     @DBRef @NotBlank private User user;
 
-    public Attendance(String date, String startTime, String endTime, double workedHours,Boolean halfDay, User user){
+    public Attendance(String date, String startTime, String endTime, double workedHours,AttendanceStatus attendanceStatus, User user){
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.workedHours = workedHours;
-        this.halfDay = halfDay;
+        this.attendanceStatus = attendanceStatus;
         this.user = user;
     }
 }

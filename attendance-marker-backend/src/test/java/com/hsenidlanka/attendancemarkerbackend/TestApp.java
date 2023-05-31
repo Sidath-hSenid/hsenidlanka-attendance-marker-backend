@@ -6,10 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.hsenidlanka.attendancemarkerbackend.model.Company;
-import com.hsenidlanka.attendancemarkerbackend.model.ERole;
-import com.hsenidlanka.attendancemarkerbackend.model.Role;
-import com.hsenidlanka.attendancemarkerbackend.model.User;
+import com.hsenidlanka.attendancemarkerbackend.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,7 +90,7 @@ public class TestApp extends AttendanceServiceMarkerBackendApplicationTests {
         mockMvc.perform(post("/attendances")).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.id").value("1")).andExpect(jsonPath("$.date").value("2023-05-27")).andExpect(jsonPath("$.startTime").value("08:25"))
-                .andExpect(jsonPath("$.endTime").value("17:45")).andExpect(jsonPath("$.workedHours").value(9)).andExpect(jsonPath("$.halfDay").value(false))
+                .andExpect(jsonPath("$.endTime").value("17:45")).andExpect(jsonPath("$.workedHours").value(9)).andExpect(jsonPath("$.attendanceStatus").value(AttendanceStatus.IN_PROGRESS))
                 .andExpect(jsonPath("$.user").value(new User("1","user1","user1@gmail.com","12341234",roles,new Company("1","company1","location1"))));
 
     }
@@ -108,7 +105,7 @@ public class TestApp extends AttendanceServiceMarkerBackendApplicationTests {
         mockMvc.perform(get("/attendances")).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.id").value("2")).andExpect(jsonPath("$.date").value("2023-05-26")).andExpect(jsonPath("$.startTime").value("08:35"))
-                .andExpect(jsonPath("$.endTime").value("10:45")).andExpect(jsonPath("$.workedHours").value(2)).andExpect(jsonPath("$.halfDay").value(true))
+                .andExpect(jsonPath("$.endTime").value("10:45")).andExpect(jsonPath("$.workedHours").value(2)).andExpect(jsonPath("$.attendanceStatus").value(AttendanceStatus.IN_PROGRESS))
                 .andExpect(jsonPath("$.user").value(new User("2","user2","user2@gmail.com","12341234",roles,new Company("2","company2","location2"))));
 
     }

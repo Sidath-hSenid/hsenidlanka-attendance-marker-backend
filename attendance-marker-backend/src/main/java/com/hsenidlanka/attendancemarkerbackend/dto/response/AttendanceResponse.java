@@ -1,5 +1,6 @@
 package com.hsenidlanka.attendancemarkerbackend.dto.response;
 
+import com.hsenidlanka.attendancemarkerbackend.model.AttendanceStatus;
 import com.hsenidlanka.attendancemarkerbackend.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,6 @@ public class AttendanceResponse {
     private String startTime;
     private String endTime;
     private double workedHours;
-    private Boolean halfDay;
+    private AttendanceStatus attendanceStatus;
     private User user;
 }

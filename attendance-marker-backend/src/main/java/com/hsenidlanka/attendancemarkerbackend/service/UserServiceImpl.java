@@ -230,18 +230,11 @@ public class UserServiceImpl implements UserService {
     public MessageResponse resetPassword(String username, String email, ResetPasswordRequest resetPasswordRequest){
         try {
             logger.info("UserServiceImpl - resetPassword()");
-            List<User> userObjList = userRepository.findAll();
-            if (!userObjList.isEmpty()) {
-                logger.info("UserServiceImpl - resetPassword(userObjList is not empty.)");
-                userObjList.forEach(user -> {
-                    if (user.getUsername().equals(username) && user.getEmail().equals(email)) {
-                        logger.info("UserServiceImpl - resetPassword(An user available with username and email)");
-                        User resetPassword = user;
-                        resetPassword.setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
-                        userRepository.save(modelMapper.map(resetPassword, User.class));
-                        logger.info("UserServiceImpl - resetPassword(userObjList is not empty)");
-                    }
-                });
+            Optional<User> userObj = userRepository.findByUsernameAndEmail(username, email);
+            if (userObj.isPresent()) {
+                logger.info("UserServiceImpl - resetPassword(An user available with username and email)");
+                userObj.get().setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
+                userRepository.save(modelMapper.map(userObj, User.class));
                 return new MessageResponse("Password reset successfully!", 200);
             } else {
                 logger.error("UserServiceImpl - resetPassword(Unable find a user with given username and email)");

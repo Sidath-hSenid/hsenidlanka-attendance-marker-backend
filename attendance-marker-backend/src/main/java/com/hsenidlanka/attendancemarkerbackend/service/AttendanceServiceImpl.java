@@ -102,9 +102,10 @@ public class AttendanceServiceImpl implements AttendanceService {
                         attendanceObj.setStartTime(attendance.getStartTime());
                         attendanceObj.setEndTime(attendance.getEndTime());
                         attendanceObj.setWorkedHours(attendance.getWorkedHours());
-                        attendanceObj.setHalfDay(attendance.getHalfDay());
+                        attendanceObj.setAttendanceStatus(attendance.getAttendanceStatus());
                     }
                 });
+                System.out.println(attendanceObj);
                 return new GetAttendanceResponse(attendanceObj, 200);
             } else {
                 logger.error("AttendanceServiceImpl - getAttendanceByUserIdAndDate(No attendance available with the user ID and Date.)");
@@ -135,7 +136,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                         attendanceResponse.setStartTime(attendance.getStartTime());
                         attendanceResponse.setEndTime(attendance.getEndTime());
                         attendanceResponse.setWorkedHours(attendance.getWorkedHours());
-                        attendanceResponse.setHalfDay(attendance.getHalfDay());
+                        attendanceResponse.setAttendanceStatus(attendance.getAttendanceStatus());
                         attendanceResponse.setUser(attendance.getUser());
                         attendanceResponseList.add(attendanceResponse);
                         return true;
@@ -166,7 +167,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 attendance.setStartTime(attendanceUpdateRequestById.getStartTime());
                 attendance.setEndTime(attendanceUpdateRequestById.getEndTime());
                 attendance.setWorkedHours(attendanceUpdateRequestById.getWorkedHours());
-                attendance.setHalfDay(attendanceUpdateRequestById.getHalfDay());
+                attendance.setAttendanceStatus(attendanceUpdateRequestById.getAttendanceStatus());
                 attendanceRepository.save(modelMapper.map(attendance, Attendance.class));
                 return new PutAttendanceUpdateRequestById(attendanceUpdateRequestById, 200);
             } else {
@@ -190,7 +191,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 Attendance attendance = attendanceObj.get();
                 attendance.setEndTime(attendanceUpdateEndTimeRequest.getEndTime());
                 attendance.setWorkedHours(attendanceUpdateEndTimeRequest.getWorkedHours());
-                attendance.setHalfDay(attendanceUpdateEndTimeRequest.getHalfDay());
+                attendance.setAttendanceStatus(attendanceUpdateEndTimeRequest.getAttendanceStatus());
                 attendanceRepository.save(modelMapper.map(attendance, Attendance.class));
                 return new PutAttendanceUpdateEndTimeRequest(attendanceUpdateEndTimeRequest,200);
             } else {
